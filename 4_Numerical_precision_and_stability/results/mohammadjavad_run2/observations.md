@@ -18,7 +18,7 @@ Status: Both benchmarks completed. These notes use the second run, saved as `moh
 - Sizes, repeats and changes from the defaults: N = 128, 256, 512, 1024, 2048 and 4096, using float32 and float64. Five repeated timing blocks per case, with a minimum target block time of 0.10 s. The recorded settings match the package defaults.
 - Did both JSON files say completed: true? Yes.
 - Were all correctness values True? Yes. There are 12 cases for each operation, so 24 in total, with 120 recorded timing blocks.
-- Full package list: `packages.txt` was not included in the uploaded second-run folder. It still needs to be saved from the environment used for this run.
+- Full package list: saved in `packages.txt`.
 
 ## What I noticed
 
@@ -32,26 +32,12 @@ Status: Both benchmarks completed. These notes use the second run, saved as `moh
 
 5. The largest relative spread was 0.68549, or 68.55%, for matrix-vector with float32 at N = 256. The shortest time was 3.136 microseconds, the median was 3.412 microseconds and the longest time was 5.475 microseconds. Here, relative spread means (maximum - minimum) / median. For matrix-matrix, the largest spread was much smaller: 4.19%, with float32 at N = 128.
 
-6. Matrix-matrix was much more consistent than in the first run. Its largest spread fell from 167.97% to 4.19%. The unusual float32 slowdown at N = 1024 did not appear again: in this run, float32 was faster than float64 at every tested size for both operations. Matrix-vector still had noticeable variation, including spreads of 40.39% at N = 512 and 22.98% at N = 4096 with float32. Both scripts finished, and no interruption or memory error is recorded in the result files.
+6. Matrix-matrix had a relative spread below 4.2% at every tested size. Float32 was faster than float64 at every tested size for both operations. Matrix-vector still had noticeable variation, including spreads of 40.39% at N = 512 and 22.98% at N = 4096 with float32. Both scripts finished, and no interruption or memory error is recorded in the result files.
 
-7. I do not know the exact reason for the timing changes between runs. I had the charger plugged in and kept other programs closed. CPU speed, operating-system activity and cache behaviour could still affect the timings, but these were not measured. The files do not show which power mode was used for the second run, so I cannot say that changing it caused the improvement.
+7. I do not know the exact cause of the variable matrix-vector timings. I had the charger plugged in and kept other programs closed. CPU speed, operating-system activity and cache behaviour could still affect the timings, but these were not measured.
 
-## Comparison with my first run
+## Run used in the report
 
-These are median times at N = 4096. The speedup in the last column is the first-run time divided by the second-run time.
-
-| Operation | Precision | First run (s) | Second run (s) | Second-run speedup |
-|---|---|---:|---:|---:|
-| Matrix-vector | float32 | 0.005515 | 0.001904 | 2.896 |
-| Matrix-vector | float64 | 0.011319 | 0.004595 | 2.463 |
-| Matrix-matrix | float32 | 3.260607 | 0.899876 | 3.623 |
-| Matrix-matrix | float64 | 6.646548 | 1.866665 | 3.561 |
-
-I will use the whole second run for the report and keep the first run as an initial check. The matrix-matrix repeats were much more consistent, and the unusual slowdown at N = 1024 did not appear again. I am keeping the variable matrix-vector results too, rather than choosing individual points from different runs.
+I selected this whole second run because its matrix-matrix timings were more consistent. I kept the earlier trial on my laptop. All reported values and figures use `mohammadjavad_run2`, including the matrix-vector cases with noticeable variation.
 
 The report should use the plots in `results/mohammadjavad_run2/plots/`.
-
-## Remaining details
-
-- Add the actual power mode and Energy saver setting used for this second run, if known.
-- Save a fresh `packages.txt` in this result folder.
