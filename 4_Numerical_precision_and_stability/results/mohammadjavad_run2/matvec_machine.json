@@ -1,0 +1,36 @@
+{
+  "folder": "mohammadjavad_run2",
+  "operation": "matvec",
+  "started_utc": "2026-11-14T12:00:07.885126+00:00",
+  "system": "Windows-11-10.0.26200-SP0",
+  "cpu_reported_by_python": "Intel64 Family 6 Model 186 Stepping 2, GenuineIntel",
+  "logical_cpus_reported_by_python": 20,
+  "python": "3.14.2 (tags/v3.14.2:df79316, Dec  5 2025, 17:18:21) [MSC v.1944 64 bit (AMD64)]",
+  "numpy": "2.5.4",
+  "requested_blas_threads": 1,
+  "detected_libraries": [
+    {
+      "user_api": "blas",
+      "internal_api": "openblas",
+      "num_threads": 1,
+      "prefix": "libscipy_openblas",
+      "filepath": "C:\\Data\\MohammadJavad\\UPC\\HPC\\Sample_2\\Group_Assignment_2_Beginner_Package\\Group_Assignment_2_Beginner_Package\\SAMPLE_SOLUTION\\4_Numerical_precision_and_stability\\.venv\\Lib\\site-packages\\numpy.libs\\libscipy_openblas64_-ed4f167a5330424524f45258e7ca2c8d.dll",
+      "version": "0.3.34.106.0",
+      "threading_layer": "pthreads",
+      "architecture": "Haswell"
+    }
+  ],
+  "sizes_requested": [
+    128,
+    256,
+    512,
+    1024,
+    2048,
+    4096
+  ],
+  "repeats": 5,
+  "minimum_block_seconds": 0.1,
+  "maximum_calls_per_block": 1048576,
+  "completed": true,
+  "finished_utc": "2026-11-14T12:00:20.281092+00:00"
+}
