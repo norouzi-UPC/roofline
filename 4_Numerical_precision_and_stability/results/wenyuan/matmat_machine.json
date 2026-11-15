@@ -1,0 +1,36 @@
+{
+  "folder": "wenyuan",
+  "operation": "matmat",
+  "started_utc": "2026-11-15T03:20:49.293876+00:00",
+  "system": "Windows-11-10.0.26200-SP0",
+  "cpu_reported_by_python": "AMD64 Family 26 Model 36 Stepping 0, AuthenticAMD",
+  "logical_cpus_reported_by_python": 20,
+  "python": "3.14.9 (tags/v3.14.9:ead82c0, Oct 21 2026, 06:26:14) [MSC v.1944 64 bit (AMD64)]",
+  "numpy": "2.5.4",
+  "requested_blas_threads": 1,
+  "detected_libraries": [
+    {
+      "user_api": "blas",
+      "internal_api": "openblas",
+      "num_threads": 1,
+      "prefix": "libscipy_openblas",
+      "filepath": "C:\\Users\\hwy\\Desktop\\UPC\\\u504f\u5fae\u5206\u65b9\u7a0b\u4e0e\u6709\u9650\u5143\u65b9\u6cd5\\assignment2\\Python codes-20261105\\2D_Laplace\\2D_Laplace\\2D_Laplace\\.venv\\Lib\\site-packages\\numpy.libs\\libscipy_openblas64_-ed4f167a5330424524f45258e7ca2c8d.dll",
+      "version": "0.3.34.106.0",
+      "threading_layer": "pthreads",
+      "architecture": "SkylakeX"
+    }
+  ],
+  "sizes_requested": [
+    128,
+    256,
+    512,
+    1024,
+    2048,
+    4096
+  ],
+  "repeats": 5,
+  "minimum_block_seconds": 0.1,
+  "maximum_calls_per_block": 1048576,
+  "completed": true,
+  "finished_utc": "2026-11-15T03:21:39.544038+00:00"
+}
