@@ -1,0 +1,220 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=2cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{amsmath,booktabs,tabularx,array,graphicx,float,xcolor,hyperref}
+\definecolor{navy}{HTML}{205A83}
+\definecolor{rose}{HTML}{AD4166}
+\hypersetup{colorlinks=true,urlcolor=navy,linkcolor=navy}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\newcommand{\todo}[1]{\par\textcolor{rose}{\textbf{TO COMPLETE:} #1}\par}
+\newcommand{\runplots}[2]{%
+  \subsection{#1}
+  \IfFileExists{results/#2/plots/overview.png}{%
+    \begin{figure}[H]\centering
+      \includegraphics[width=\linewidth]{results/#2/plots/overview.png}
+      \caption{#1: time, performance, estimated effective bandwidth and
+      Roofline coordinates. The shaded time range shows the minimum and
+      maximum of the five blocks.}
+    \end{figure}
+  }{\todo{Add #1's overview plot from the selected real run.}}
+  \IfFileExists{results/#2/plots/precision_speedup.png}{%
+    \begin{figure}[H]\centering
+      \includegraphics[width=0.66\linewidth]{results/#2/plots/precision_speedup.png}
+      \caption{#1: float32 speedup, defined as $t_{64}/t_{32}$.}
+    \end{figure}
+  }{\todo{Add #1's precision-speedup plot.}}
+}
+
+\title{\textcolor{navy}{Exploring the Roofline Model}}
+\author{MohammadJavad Norouzi \and Aland Arif \and
+Hamed Zahraei Ramazani \and Wenyuan Huang}
+\date{Draft prepared 10 November 2026}
+
+\begin{document}
+\maketitle
+\textcolor{rose}{\textbf{DRAFT: the four laptop results and final discussion
+are still missing. This PDF is not ready to submit.}}
+
+Course: Scientific Programming and High Performance Computing, UPC.
+\todo{Add the course repository URL. Update the date and remove the draft
+notice only after completing the report.}
+
+\section{Aim}
+We compare matrix-vector multiplication, $y=Ax$, and matrix-matrix
+multiplication, $C=AB$, using NumPy with \texttt{float32} and \texttt{float64}.
+We study how problem size, data reuse and precision affect performance. Each
+member runs the same experiment on their own laptop.
+
+\section{Method}
+We fill $A$ with ones, $B$ with twos and $x$ with threes. Inputs and output
+use the selected precision. We allocate the output before timing and use
+\texttt{np.matmul} with its \texttt{out} argument. For these data, each entry
+of $y$ should equal $3N$ and each entry of $C$ should equal $2N$. We check the
+whole output before and after timing.
+
+The default sizes are $128,256,512,1024,2048,4096$. We perform three warm-up
+calls. We then double the calls per block until a block lasts at least
+$0.10$ seconds, unless the cap of $1{,}048{,}576$ calls is reached. We measure
+five blocks and divide each duration by its call count. We use the median
+time per call, while retaining raw times, minima and maxima. Python loop
+overhead remains and matters most for small cases.
+
+Allocation, initialization, checking and file output are outside the timer.
+NumPy/BLAS may still use internal workspace. We reuse the arrays and do not
+flush caches, so this is a warm repeated workload. We request one BLAS thread
+and save detected libraries and thread counts. This does not measure the
+full multicore peak of the laptop.
+
+\todo{Confirm that these settings describe the selected runs. Record reduced
+sizes, interrupted runs, reruns or unverified thread counts.}
+
+\begin{table}[H]\centering\small
+\begin{tabularx}{\linewidth}{@{}lXX@{}}\toprule
+Member & CPU, RAM and OS & Software, power conditions and selected run \\\midrule
+MohammadJavad & TO COMPLETE & TO COMPLETE \\
+Aland & TO COMPLETE & TO COMPLETE \\
+Hamed & TO COMPLETE & TO COMPLETE \\
+Wenyuan & TO COMPLETE & TO COMPLETE \\\bottomrule
+\end{tabularx}
+\caption{Laptop details. Include Python, NumPy, BLAS and observed threads.}
+\end{table}
+
+\section{Theoretical estimates}
+A dot product of length $N$ uses $N$ multiplications and $N-1$ additions.
+Therefore the exact scalar counts are
+\[
+F_{\mathrm{mv}}=N(2N-1),\qquad
+F_{\mathrm{mm}}=N^2(2N-1).
+\]
+We use the standard large-$N$ approximations $2N^2$ and $2N^3$ in our
+performance calculations. A multiplication and an addition count as two
+FLOPs, including when fused into one instruction.
+
+Let $s$ be the bytes per number: $s=4$ for float32 and $s=8$ for float64.
+With ideal reuse, matrix-vector multiplication reads $A$ and $x$ once and
+writes $y$ once. Matrix-matrix multiplication reads $A$ and $B$ once and
+writes $C$ once. Thus
+\[
+Q_{\mathrm{mv}}=s(N^2+2N),\qquad Q_{\mathrm{mm}}=3sN^2.
+\]
+We do not read the old output in this model. The resulting estimates are
+\[
+I_{\mathrm{mv}}=\frac{2N^2}{s(N^2+2N)},\qquad
+I_{\mathrm{mm}}=\frac{2N}{3s}.
+\]
+\begin{table}[H]\centering
+\begin{tabular}{@{}lll@{}}\toprule
+Operation & float32 intensity & float64 intensity \\\midrule
+Matrix-vector, large $N$ & $\approx0.5$ & $\approx0.25$ \\
+Matrix-matrix & $N/6$ & $N/12$ \\\bottomrule
+\end{tabular}
+\caption{Idealized arithmetic intensity in FLOP/byte.}
+\end{table}
+
+These estimates omit write-allocate traffic, packing and other internal
+transfers. Finite cache may force extra reloads, especially for large
+matrix-matrix multiplication. Small warmed cases may obtain inputs from
+cache. The estimated bytes are not measured RAM traffic.
+
+For median time $t$, we calculate
+\[
+P=\frac{F}{t\,10^9}\ \text{GFLOP/s},\qquad
+B_{\mathrm{est}}=\frac{Q}{t\,10^9}\ \text{GB/s}.
+\]
+GB is decimal. Since $B_{\mathrm{est}}=P/I$, these quantities are not
+independent measurements of computation and physical memory bandwidth.
+
+\section{Roofline interpretation}
+The Roofline model is
+\[
+P\leq\min\left(P_{\mathrm{peak}},B_{\mathrm{memory}}I\right).
+\]
+The bandwidth and intensity must refer to the same memory level. The ridge
+is at $I=P_{\mathrm{peak}}/B_{\mathrm{memory}}$. Low intensity makes memory
+supply a likely limit; high intensity can make the compute ceiling lower
+if data are reused effectively. Actual performance can be below both ceilings.
+
+We do not independently measure hardware ceilings in the basic experiment.
+Our default plots show measured GFLOP/s versus estimated intensity without
+claimed hardware-limit lines. This supports a qualitative interpretation,
+but does not prove the limiting resource. We do not treat the largest value
+from our benchmarks as a hardware ceiling.
+\todo{If independently sourced ceilings were added, give their sources,
+memory level, precision and matching thread setting. Otherwise remove this
+instruction and keep the preceding limitation.}
+
+\section{Experimental results}
+\todo{Select one real run per laptop. The standard folders below are
+mohammadjavad, aland, hamed and wenyuan. Change the folder arguments in the
+LaTeX source if a rerun was selected.}
+
+\runplots{MohammadJavad}{mohammadjavad}
+\runplots{Aland}{aland}
+\runplots{Hamed}{hamed}
+\runplots{Wenyuan}{wenyuan}
+
+\subsection{Numerical comparison}
+\todo{Choose the largest common $N$ and fill in the table from the CSV files.}
+\begin{table}[H]\centering\small
+\begin{tabular}{@{}lrrrrr@{}}\toprule
+Member & $N$ & MV $t_{64}/t_{32}$ & MM $t_{64}/t_{32}$ & MV FP64 & MM FP64 \\\midrule
+MohammadJavad & -- & -- & -- & -- & -- \\
+Aland & -- & -- & -- & -- & -- \\
+Hamed & -- & -- & -- & -- & -- \\
+Wenyuan & -- & -- & -- & -- & -- \\\bottomrule
+\end{tabular}
+\caption{Precision speedup and FP64 performance. The last two columns use
+GFLOP/s. A speedup above one means float32 was faster.}
+\end{table}
+
+\section{Discussion}
+\subsection{How does time scale with problem size?}
+The work grows as $N^2$ for matrix-vector and $N^3$ for matrix-matrix.
+Doubling $N$ increases the work by about four and eight respectively.
+This is the expected time scaling only while achieved performance stays
+approximately constant.
+\todo{Give actual ratios for both operations and precisions, naming the
+sizes. Discuss overhead, cache transitions and changing GFLOP/s using evidence.}
+
+\subsection{How do the operations compare?}
+Matrix-vector has low, nearly constant ideal intensity. Matrix-matrix can
+reuse an input entry for many outputs, giving intensity that grows with $N$.
+Optimized BLAS uses blocking to improve reuse.
+\todo{Compare measured GFLOP/s at the same $N$. Also compare times: higher
+GFLOP/s does not mean less time when the operation does more total work.}
+
+\subsection{What changes with float32?}
+Float32 halves array bytes and doubles the ideal intensity. It may also
+increase vector arithmetic throughput. A twofold speedup is not guaranteed.
+\todo{Report $t_{64}/t_{32}$ for both operations. Discuss differences between
+sizes and laptops and any cases in which float32 was not faster.}
+
+\subsection{Were there unexpected results?}
+\todo{Identify unusual points or large timing spreads, or state that no
+substantial irregularity was found. Possible causes include background work,
+clock and power behavior, cache capacity, BLAS choices and timing overhead.
+Distinguish measured evidence from possible explanations.}
+We keep the four laptops separate. Hardware and software vary together,
+so this comparison does not isolate one hardware feature by itself.
+
+\section{Conclusion}
+\todo{Write a short conclusion from the real measurements: the operation
+difference, precision effect and limits of the estimated-byte interpretation.}
+
+\section{Contributions}
+\todo{Use the four contribution notes and PR links. Record sample-code review,
+changes, running, checking plots and report work accurately.}
+
+\section*{References}
+\begin{enumerate}
+\item Course handout, \emph{Homework: Exploring the Roofline Model}.
+\item NumPy, \texttt{matmul}:\\
+\url{https://numpy.org/doc/stable/reference/generated/numpy.matmul.html}
+\item threadpoolctl: \url{https://github.com/joblib/threadpoolctl}
+\item NERSC, Roofline Performance Model:\\
+\url{https://docs.nersc.gov/tools/performance/roofline/}
+\end{enumerate}
+\end{document}
