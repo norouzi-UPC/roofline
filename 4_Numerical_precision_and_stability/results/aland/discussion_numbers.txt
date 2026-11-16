@@ -1,0 +1,39 @@
+Values calculated from this folder only. Speedup = time64 / time32.
+Time scaling = time(N) / time(previous N); not always a doubling.
+
+matvec
+N=128: float32 speedup=1.411
+N=256: float32 speedup=1.865
+N=512: float32 speedup=1.859
+N=1024: float32 speedup=3.191
+N=2048: float32 speedup=2.53
+N=4096: float32 speedup=2.257
+matmat
+N=128: float32 speedup=2.454
+N=256: float32 speedup=2.173
+N=512: float32 speedup=2.238
+N=1024: float32 speedup=2.415
+N=2048: float32 speedup=2.503
+N=4096: float32 speedup=2.386
+
+Adjacent-size time ratios
+matvec float32 128 -> 256: 2.363
+matvec float32 256 -> 512: 2.909
+matvec float32 512 -> 1024: 3.843
+matvec float32 1024 -> 2048: 7.898
+matvec float32 2048 -> 4096: 5.096
+matvec float64 128 -> 256: 3.123
+matvec float64 256 -> 512: 2.901
+matvec float64 512 -> 1024: 6.596
+matvec float64 1024 -> 2048: 6.263
+matvec float64 2048 -> 4096: 4.546
+matmat float32 128 -> 256: 6.569
+matmat float32 256 -> 512: 7.739
+matmat float32 512 -> 1024: 7.671
+matmat float32 1024 -> 2048: 7.71
+matmat float32 2048 -> 4096: 8.356
+matmat float64 128 -> 256: 5.817
+matmat float64 256 -> 512: 7.972
+matmat float64 512 -> 1024: 8.276
+matmat float64 1024 -> 2048: 7.993
+matmat float64 2048 -> 4096: 7.966
