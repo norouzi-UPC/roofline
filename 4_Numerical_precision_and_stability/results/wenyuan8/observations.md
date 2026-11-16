@@ -23,19 +23,19 @@ Status: Both benchmarks completed in one run, saved as `results/wenyuan8`.
 
 ## What I noticed
 
-1. For matrix-vector with float32, increasing N from 512 to 1024 changed the median time from 0.00001088 s to 0.00004508 s. It took about 4.14 times longer, close to the 4-fold increase in work. With float64, increasing N from 512 to 1024 changed the median time from 0.00002126 s to 0.00008201 s, a ratio of 3.86. The step from N = 1024 to 2048 took 6.36 times longer in float32 and 8.60 times longer in float64, above 4. This is the cache transition described below.
+1. For matrix-vector with float32, increasing N from 512 to 1024 changed the median time from 0.00001088 s to 0.00004508 s. It took about 4.14 times longer, close to the 4-fold increase in work. With float64, increasing N from 512 to 1024 changed the median time from 0.00002126 s to 0.00008201 s, a ratio of 3.86. The step from N = 1024 to 2048 took 6.36 times longer in float32 and 8.60 times longer in float64, above 4. This is consistent with the cache transition described below, but I did not measure cache behaviour directly.
 
-2. For matrix-matrix with float32, the adjacent-size time ratios were 7.12, 7.79, 8.01, 8.01 and 7.92, close to the expected 8-fold work increase. With float64 the ratios were 4.31, 7.56, 7.99, 7.95 and 7.86. The first ratio is affected by the very small N = 128 timing; from N = 256 onward the float64 ratios are also close to 8.
+2. For matrix-matrix with float32, the adjacent-size time ratios were 7.12, 7.79, 8.01, 8.01 and 7.92, close to the expected 8-fold work increase. With float64 the ratios were 4.31, 7.56, 7.99, 7.95 and 7.86. The first ratio may be affected by the very small N = 128 timing; from N = 256 onward the float64 ratios are also close to 8.
 
 3. At N = 4096, time64/time32 was 2.379 for matrix-vector and 2.227 for matrix-matrix. At N = 2048, the same ratios were 2.458 and 2.242. Float32 is faster, but the speedup is not exactly 2.
 
 4. At N = 4096, matrix-vector reached 21.112 GFLOP/s with float32 and 8.875 GFLOP/s with float64. Matrix-matrix reached 127.916 and 57.450 GFLOP/s respectively. Matrix-matrix achieved much higher GFLOP/s, but it still took much longer overall because it did far more work: 2.392334 s in float64, compared with 0.003781 s for matrix-vector.
 
-5. The largest relative spread was 0.615, or 61.5%, for matrix-matrix with float64 at N = 128. The shortest block was 0.000106354 s, the median was 0.000146982 s and the longest block was 0.000196695 s. Here, relative spread means (maximum - minimum) / median. The next largest were 21.3% for matrix-vector float64 at N = 512 and 12.8% for matrix-matrix float64 at N = 256.
+5. The largest relative spread was 0.615, or 61.5%, for matrix-matrix with float64 at N = 128. These are times per call, not whole timing blocks: the shortest call was 0.000106354 s, the median was 0.000146982 s and the longest call was 0.000196695 s. The full timing blocks lasted about 0.218–0.403 s. Here, relative spread means (maximum - minimum) / median. The next largest were 21.3% for matrix-vector float64 at N = 512 and 12.8% for matrix-matrix float64 at N = 256.
 
-6. Matrix-vector performance peaked at N = 512 in this run: 48.181 GFLOP/s for float32 and 24.662 GFLOP/s for float64. It then fell to 21.112 and 8.875 GFLOP/s at N = 4096. Matrix-matrix float32 stayed around 124–128 GFLOP/s from N = 256 onward. Matrix-matrix float64 rose from 28.5 GFLOP/s at N = 128 to about 56–57.5 GFLOP/s from N = 512 onward. The N = 128 float64 point has large spread because each call is very short.
+6. Matrix-vector performance peaked at N = 512 in this run: 48.181 GFLOP/s for float32 and 24.662 GFLOP/s for float64. It then fell to 21.112 and 8.875 GFLOP/s at N = 4096. Matrix-matrix float32 stayed around 124–128 GFLOP/s from N = 256 onward. Matrix-matrix float64 rose from 28.5 GFLOP/s at N = 128 to about 56–57.5 GFLOP/s from N = 512 onward. The N = 128 float64 point has large spread, which may be related to the very short per-call times.
 
-7. I do not know the exact cause of every fluctuation, but the main pattern is consistent with the memory hierarchy and with small timing noise. The CPU has 24 MB of L3 cache. A float64 matrix of size N = 1024 occupies 8 MB and fits in L3; at N = 2048 it occupies 32 MB and no longer fits. The float32 matrix grows from 4 MB to 16 MB over the same step, which is close to the effective cache boundary. Because the benchmark calls the same operation repeatedly, small matrices stay cache-resident and their estimated bytes overstate the real DRAM traffic. The large spread at matrix-matrix float64 N = 128 is a small-size timing effect; the median reduces its influence.
+7. I did not measure cache counters or DRAM traffic directly, so the following are possible explanations rather than proven causes. The CPU has 24 MB of L3 cache. A float64 matrix of size N = 1024 occupies 8 MB and may fit in L3; at N = 2048 it occupies 32 MB and may no longer fit. The float32 matrix grows from 4 MB to 16 MB over the same step, which is close to the effective cache boundary. Because the benchmark calls the same operation repeatedly, small matrices may stay cache-resident and their estimated bytes may overstate the real DRAM traffic. The large spread at matrix-matrix float64 N = 128 may be related to the very short per-call times and transient system activity; the median reduces its influence. CPU frequency changes, thermal behaviour and background processes are other possible explanations that I did not measure.
 
 ## Summary at N = 4096
 
@@ -46,16 +46,16 @@ Status: Both benchmarks completed in one run, saved as `results/wenyuan8`.
 | Matrix-matrix | float32 | 1.074448 | 127.916 | 0.187 | 682.667 |
 | Matrix-matrix | float64 | 2.392334 | 57.450 | 0.168 | 341.333 |
 
-The estimated GB/s values are derived from ideal byte estimates and the same measured time. They are not measurements of physical RAM traffic. At small and medium N, cache reuse makes the real DRAM traffic much smaller than the estimate; at large N the estimate is closer to reality.
+The estimated GB/s values are derived from ideal byte estimates and the same measured time. They are not measurements of physical RAM traffic. At small and medium N, cache reuse may make the real DRAM traffic much smaller than the estimate; at large N the estimate is closer to reality.
 
 ## Run used in the report
 
-I selected this run, saved as `results/wenyuan8`. There was no rerun. All reported matrix-vector and matrix-matrix values and the figures in `results/wenyuan8/plots/` refer to this run.
+I selected this run, saved as `results/wenyuan8`. The report uses results/wenyuan8 and the plots from that folder. All reported matrix-vector and matrix-matrix values and the figures in `results/wenyuan8/plots/` refer to this run.
 
 ## Notes for the discussion
 
-- Matrix-vector has low, almost constant ideal intensity: about 0.5 FLOP/byte in float32 and 0.25 in float64 for large N. Its lower GFLOP/s and its drop after N = 512 are consistent with a memory-supply limitation, but the drop is a cache effect rather than a failure of the benchmark.
+- Matrix-vector has low, almost constant ideal intensity: about 0.5 FLOP/byte in float32 and 0.25 in float64 for large N. Its lower GFLOP/s and its drop after N = 512 are consistent with a memory-supply limitation, but the drop may be a cache effect rather than a failure of the benchmark.
 - Matrix-matrix has ideal intensity N/6 in float32 and N/12 in float64, reaching about 682.7 and 341.3 FLOP/byte at N = 4096. Its much higher GFLOP/s is consistent with greater data reuse. It still takes longer than matrix-vector because its total work grows as 2N^3.
 - Float32 was faster than float64 at N = 4096 for both operations, but the speedup was about 2.23 to 2.38, not exactly 2. The result therefore does not support a universal twofold speedup.
-- The simple Roofline expression P <= min(P_peak, B_memory * I) uses one memory bandwidth. The measurements show different effective bandwidths at different sizes because of L3 caching, so the points do not all lie on one straight memory roof.
-- The matrix-matrix float64 point at N = 128 has large spread, so the 8-fold scaling is clearest from N = 256 onward. The experiment does not independently measure hardware ceilings, and the largest measured GFLOP/s should not be called a hardware peak.
+- The simple Roofline expression P <= min(P_peak, B_memory * I) uses one memory bandwidth. The measurements show different effective bandwidths at different sizes, which may be related to L3 caching; the points do not all lie on one straight memory roof.
+- The matrix-matrix float64 point at N = 128 has large spread, which may be related to short per-call times; the 8-fold scaling is clearest from N = 256 onward. The experiment does not independently measure hardware ceilings, and the largest measured GFLOP/s should not be called a hardware peak.
