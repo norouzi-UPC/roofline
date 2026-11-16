@@ -9,3 +9,7 @@ I also ran both benchmarks on my laptop. All 24 checks passed. I uploaded my run
 Code PR: https://github.com/norouzi-UPC/roofline/pull/1
 
 Results PR: https://github.com/norouzi-UPC/roofline/pull/2
+
+I also added the plotting script from the sample and fixed the overlapping ticks and spacing. I regenerated my run 2 PNG and PDF plots and checked the labels and axis ranges.
+
+Plotting PR: https://github.com/norouzi-UPC/roofline/pull/3
