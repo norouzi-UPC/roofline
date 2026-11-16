@@ -1,7 +1,7 @@
 {
-  "folder": "wenyuan",
+  "folder": "wenyuan8",
   "operation": "matvec",
-  "started_utc": "2026-11-15T03:13:53.453174+00:00",
+  "started_utc": "2026-11-16T18:04:55.409707+00:00",
   "system": "Windows-11-10.0.26200-SP0",
   "cpu_reported_by_python": "AMD64 Family 26 Model 36 Stepping 0, AuthenticAMD",
   "logical_cpus_reported_by_python": 20,
@@ -32,5 +32,5 @@
   "minimum_block_seconds": 0.1,
   "maximum_calls_per_block": 1048576,
   "completed": true,
-  "finished_utc": "2026-11-15T03:14:05.754003+00:00"
+  "finished_utc": "2026-11-16T18:05:08.265822+00:00"
 }
