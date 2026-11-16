@@ -1,0 +1,36 @@
+{
+  "folder": "hamed",
+  "operation": "matvec",
+  "started_utc": "2026-11-16T18:09:09.015507+00:00",
+  "system": "Windows-11-10.0.26300-SP0",
+  "cpu_reported_by_python": "Intel64 Family 6 Model 126 Stepping 5, GenuineIntel",
+  "logical_cpus_reported_by_python": 8,
+  "python": "3.14.8 (tags/v3.14.8:8e6e75d, Sep 30 2026, 18:19:33) [MSC v.1944 64 bit (AMD64)]",
+  "numpy": "2.5.5",
+  "requested_blas_threads": 1,
+  "detected_libraries": [
+    {
+      "user_api": "blas",
+      "internal_api": "openblas",
+      "num_threads": 1,
+      "prefix": "libscipy_openblas",
+      "filepath": "C:\\Users\\Hamed\\Desktop\\HPC2\\.venv\\Lib\\site-packages\\numpy.libs\\libscipy_openblas64_-4e39871015dc1470c682dc512497ee22.dll",
+      "version": "0.3.34.237.2",
+      "threading_layer": "pthreads",
+      "architecture": "SkylakeX"
+    }
+  ],
+  "sizes_requested": [
+    128,
+    256,
+    512,
+    1024,
+    2048,
+    4096
+  ],
+  "repeats": 5,
+  "minimum_block_seconds": 0.1,
+  "maximum_calls_per_block": 1048576,
+  "completed": true,
+  "finished_utc": "2026-11-16T18:09:20.262102+00:00"
+}
