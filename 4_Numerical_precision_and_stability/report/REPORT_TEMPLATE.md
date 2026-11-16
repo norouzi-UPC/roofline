@@ -41,10 +41,10 @@ List any reductions, interruptions, unverified threads or reruns.
 
 | Member | CPU and RAM | OS | Python / NumPy / BLAS | Power conditions | Selected run folder |
 |---|---|---|---|---|---|
-| MohammadJavad | TO COMPLETE | TO COMPLETE | TO COMPLETE | TO COMPLETE | mohammadjavad |
+| MohammadJavad | TO COMPLETE | TO COMPLETE | TO COMPLETE | TO COMPLETE | mohammadjavad_run2 |
 | Aland | TO COMPLETE | TO COMPLETE | TO COMPLETE | TO COMPLETE | aland |
 | Hamed | TO COMPLETE | TO COMPLETE | TO COMPLETE | TO COMPLETE | hamed |
-| Wenyuan | TO COMPLETE | TO COMPLETE | TO COMPLETE | TO COMPLETE | wenyuan |
+| Wenyuan | TO COMPLETE | TO COMPLETE | TO COMPLETE | TO COMPLETE | wenyuan8 |
 
 ## 3. Theoretical estimates
 
