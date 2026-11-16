@@ -10,8 +10,8 @@ results/hamed.
 - RAM: 8,0 GB LPDDR4.
 - Operating system: Windows 11.
 - Charger connected: Yes.
-- Power mode and Energy saver: actual settings.
-- Other heavy programs running: actual conditions.
+- Power mode and Energy saver: Not recorded.
+- Other heavy programs running: Not recorded.
 - Python: 3.14.8.
 - NumPy: 2.5.5.
 - BLAS: OpenBLAS 0.3.34.237.2.
